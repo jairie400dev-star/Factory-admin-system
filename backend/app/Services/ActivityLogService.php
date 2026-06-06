@@ -47,7 +47,11 @@ class ActivityLogService
 
             // Typical Laravel log format:
             // [2026-06-05 12:34:56] local.INFO: Model event logger {"action":"updated",...}
-            if (! preg_match('/^\[([^\]]+)\].*' . self::MARKER . '.*(\{.*\})$/', $line, $matches)) {
+            //
+            // The capture must anchor on the FIRST "{" after the marker, otherwise
+            // the greedy match starts inside the nested "changes" object on
+            // "updated" entries and produces invalid JSON.
+            if (! preg_match('/^\[([^\]]+)\].*?' . self::MARKER . '\s+(\{.*\})$/', $line, $matches)) {
                 continue;
             }
 
